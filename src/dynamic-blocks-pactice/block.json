@@ -1,13 +1,13 @@
 {
 	"$schema": "https://schemas.wp.org/trunk/block.json",
 	"apiVersion": 3,
-	"name": "create-block/dynamic-blocks-pactice",
+	"name": "blocks-course/latest-posts",
 	"version": "0.1.0",
-	"title": "Dynamic Blocks Pactice",
-	"category": "widgets",
-	"icon": "smiley",
-	"description": "Example block scaffolded with Create Block tool.",
-	"example": {},
+	"title": "Dynamic Posts pactice",
+	"category": "text",
+	"icon": "admin-post",
+	"description": "Display and filter latest posts.",
+	"keywords": ["latest","posts"],
 	"supports": {
 		"html": false
 	},
