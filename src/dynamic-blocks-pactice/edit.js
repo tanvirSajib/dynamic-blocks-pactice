@@ -8,7 +8,10 @@ import { useSelect } from '@wordpress/data';
 import './editor.scss';
 
 export default function Edit({ attributes, setAttributes }) {
-	const { numberOfPosts, displayFeaturedImage, order, orderBy } = attributes;
+
+	const { numberOfPosts, displayFeaturedImage, order, orderBy, categories } = attributes;
+	const catIds = categories && categories.length > 0 ? categories.map((cat) => cat.id) : [];
+
 	const posts = useSelect(
 		(select) => {
 			return select('core').getEntityRecords('postType', 'post', {
@@ -16,9 +19,10 @@ export default function Edit({ attributes, setAttributes }) {
 				_embed: true,
 				order,
 				orderby: orderBy,
+				categories: catIds,
 			});
 		},
-		[numberOfPosts, order, orderBy]
+		[numberOfPosts, order, orderBy, categories]
 	);
 
 	const onDisplayFeaturedImageChange = (value) => {
@@ -27,6 +31,43 @@ export default function Edit({ attributes, setAttributes }) {
 	const onNumberOfItemsChange = (value) => {
 		setAttributes({ numberOfPosts: value });
 	};
+
+	let allCats = [];
+	allCats= useSelect((select) => {
+		const { getEntityRecords } = select('core');
+		return getEntityRecords('taxonomy', 'category', { per_page: -1 });
+	}, []);
+
+	const catSuggestions = {};
+	if(allCats){
+		for(let i=0; i<allCats.length; i++){
+			const cat = allCats[i];
+			catSuggestions[cat.name] = cat;
+		}
+	}
+
+	console.log(catSuggestions);
+
+	const onCategoryChange = (values) => {
+		const hasNoSuggestions = values.some(
+			(value) => typeof value === 'string' && !catSuggestions[value]
+		);
+
+		if( hasNoSuggestions) return;
+
+		const updateCats = values.map((token) => {
+			return typeof token === 'string' ? catSuggestions[token] : token;
+		})
+
+		setAttributes({ categories: updateCats });
+	}
+
+	
+
+
+
+
+
 	return (
 		<>
 			<InspectorControls>
@@ -48,7 +89,11 @@ export default function Edit({ attributes, setAttributes }) {
 						order={order}
 						onOrderChange={(value) =>
 							setAttributes({ order: value })
-						}
+						}						
+						categorySuggestions={catSuggestions}
+						selectedCategoryI={1}
+						onCategoryChange={onCategoryChange}
+						selectedCategories={categories}
 					/>
 				</PanelBody>
 			</InspectorControls>
